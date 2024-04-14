@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.1](https://github.com/acai-consulting/terraform-aws-lambda-monitoring/compare/1.0.0...1.0.1) (2024-04-14)
+
+
+### Bug Fixes
+
+* update readme ([#2](https://github.com/acai-consulting/terraform-aws-lambda-monitoring/issues/2)) ([1349d95](https://github.com/acai-consulting/terraform-aws-lambda-monitoring/commit/1349d9513c9267e531e5c9efab3070cd4e986554))
+
 ## 1.0.0 (2024-04-14)
 
 
