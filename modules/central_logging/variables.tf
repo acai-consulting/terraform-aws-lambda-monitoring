@@ -1,11 +1,21 @@
 variable "settings" {
   description = "Configuration for the central error collector."
   type = object({
-    lambda_name                  = optional(string, "lambda-error-forwarder")
-    central_iam_role_arn         = string
-    central_loggroup_name        = string
-    central_loggroup_region_name = string
+    iam_role_name       = optional(string, "central-lambda-errors")
+    trusted_account_ids = list(string)
+    error_loggroup_name = optional(string, "/aws/lambda/central-lambda-errors")
+    retention_in_days   = optional(number, 30)
   })
+
+  validation {
+    condition     = alltrue([for id in var.settings.trusted_account_ids : can(regex("^[0-9]{12}$", id))])
+    error_message = "All account_ids must be 12-digit numbers."
+  }
+
+  validation {
+    condition     = var.settings.retention_in_days == null || can(index([0, 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653], var.settings.retention_in_days))
+    error_message = "Invalid log_retention_in_days value."
+  }
 }
 
 variable "iam_role_settings" {
@@ -30,19 +40,13 @@ variable "iam_role_settings" {
   }
 }
 
-variable "lambda_settings" {
-  description = "HCL map of the SEMPER Lambda-Settings."
-  type = object({
-    timeout               = optional(number, 30)
-    memory_size           = optional(number, 512)
-    log_retention_in_days = optional(number, 90)
-    log_level             = optional(string, "INFO")
-  })
-  default = {
-    timeout               = 60
-    memory_size           = 512
-    log_retention_in_days = 90
-    log_level             = "INFO"
+variable "existing_kms_cmk_arn" {
+  description = "KMS key ARN to be used to encrypt logs and sqs messages."
+  type        = string
+  default     = null
+  validation {
+    condition     = var.existing_kms_cmk_arn == null ? true : can(regex("^arn:aws:kms", var.existing_kms_cmk_arn))
+    error_message = "Value must contain ARN, starting with \"arn:aws:kms\"."
   }
 }
 

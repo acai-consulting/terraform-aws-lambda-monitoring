@@ -1,79 +1,136 @@
-# AWS REPLACE_ME Terraform module
+# terraform-aws-lambda-monitoring
 
 <!-- LOGO -->
-<a href="https://acai.gmbh">    
-  <img src="https://acai.gmbh/images/logo/logo-acai-badge.png" alt="acai logo" title="ACAI" align="right" height="100" />
-</a>
+<div style="text-align: right; margin-top: -60px;">
+<a href="https://acai.gmbh">
+  <img src="https://github.com/acai-consulting/acai.public/raw/main/logo/logo_github_readme.png" alt="acai logo" title="ACAI"  width="250" /></a>
+</div>
+</br>
 
 <!-- SHIELDS -->
 [![Maintained by acai.gmbh][acai-shield]][acai-url]
-[![Terraform Version][terraform-version-shield]][terraform-version-url]
+![module-version-shield]
+![terraform-version-shield]
+![trivy-shield]
+![checkov-shield]
 [![Latest Release][release-shield]][release-url]
 
 <!-- DESCRIPTION -->
-[Terraform][terraform-url] module to deploy REPLACE_ME resources on [AWS][aws-url]
+[Terraform][terraform-url] module to centrally monitor Lambda functions located in multiple accounts and regions.
+Requires: https://github.com/acai-consulting/terraform-aws-lambda
 
 <!-- ARCHITECTURE -->
 ## Architecture
-![architecture][architecture-png]
-
-<!-- FEATURES -->
-## Features
-* Creates a REPLACE_ME
+![architecture](https://raw.githubusercontent.com/acai-consulting/terraform-aws-lambda-monitoring/main/docs/terraform-aws-lambda-monitoring.svg)
 
 <!-- USAGE -->
 ## Usage
 
-### REPLACE_ME
+### Central Logging
 ```hcl
-module "REPLACE_ME" {
-  source  = "acai/REPLACE_ME/aws"
-  version = "~> 1.0"
+module "central_logging" {
+  source = "git::https://github.com/acai-consulting/terraform-aws-lambda-monitoring.git//modules/central_logging"
 
-  input1 = "value1"
+  settings = {
+    trusted_account_ids = ["767398146370"] // workload
+  }
 }
 ```
 
-<!-- EXAMPLES -->
-## Examples
+### Workload Account
+```hcl
+# ---------------------------------------------------------------------------------------------------------------------
+# ¦ WORKLOAD ACCOUNT - EUC1
+# ---------------------------------------------------------------------------------------------------------------------
+locals {
+  forwarder_settings = {
+    central_iam_role_arn         = module.core_configuration.central_logging.central_iam_role_arn
+    central_loggroup_name        = module.core_configuration.central_logging.central_error_loggroup_name
+    central_loggroup_region_name = module.core_configuration.central_logging.central_error_loggroup_region_name
+  }
+}
 
-* [`examples/complete`][example-complete-url]
+module "workload_error_forwarder" {
+  source = "git::https://github.com/acai-consulting/terraform-aws-lambda-monitoring.git"
+
+  settings = local.forwarder_settings
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# ¦ WORKLOAD ACCOUNT - DEMO LAMBDA
+# ---------------------------------------------------------------------------------------------------------------------
+module "workload_lambda" {
+  source = "git::https://github.com/acai-consulting/terraform-aws-lambda.git?ref=1.2.1"
+
+  lambda_settings = {
+    function_name = "lambda-to-monitor"
+    description   = "Errors of this Lambda will be forwarded to the Central Logging"
+    config = {
+      architecture          = "arm64"
+      runtime               = "python3.10"
+      log_level             = "INFO"
+      log_retention_in_days = 7
+      memory_size           = 512
+      timeout               = 60
+    }
+    error_handling = {
+      central_collector = {
+        target_arn = module.workload_error_forwarder.forwarder_lambda.lambda.arn
+      }
+    }
+    package = {
+      source_path = "${path.module}/lambda-files"
+    }
+  }
+  depends_on = [
+    module.workload_error_forwarder
+  ]
+}
+```
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.10 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.00 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.00 |
 
 ## Modules
 
-No modules.
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_forwarder_lambda"></a> [forwarder\_lambda](#module\_forwarder\_lambda) | acai-consulting/lambda/aws | 1.2.1 |
 
 ## Resources
 
 | Name | Type |
 |------|------|
 | [aws_caller_identity.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_iam_policy_document.lambda_execution_role_permission](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_region.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_settings"></a> [settings](#input\_settings) | Configuration for the central error collector. | <pre>object({<br>    lambda_name                  = optional(string, "lambda-error-forwarder")<br>    central_iam_role_arn         = string<br>    central_loggroup_name        = string<br>    central_loggroup_region_name = string<br>  })</pre> | n/a | yes |
+| <a name="input_iam_role_settings"></a> [iam\_role\_settings](#input\_iam\_role\_settings) | Settings for IAM Roles. | <pre>object({<br>    path                     = optional(string, "/")<br>    permissions_boundary_arn = optional(string)<br>  })</pre> | <pre>{<br>  "path": "/",<br>  "permissions_boundary_arn": null<br>}</pre> | no |
+| <a name="input_lambda_settings"></a> [lambda\_settings](#input\_lambda\_settings) | HCL map of the SEMPER Lambda-Settings. | <pre>object({<br>    timeout               = optional(number, 30)<br>    memory_size           = optional(number, 512)<br>    log_retention_in_days = optional(number, 90)<br>    log_level             = optional(string, "INFO")<br>  })</pre> | <pre>{<br>  "log_level": "INFO",<br>  "log_retention_in_days": 90,<br>  "memory_size": 512,<br>  "timeout": 60<br>}</pre> | no |
+| <a name="input_resource_tags"></a> [resource\_tags](#input\_resource\_tags) | A map of tags to assign to the resources in this module. | `map(string)` | `{}` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | <a name="output_account_id"></a> [account\_id](#output\_account\_id) | account\_id |
-| <a name="output_input"></a> [input](#output\_input) | pass through input |
+| <a name="output_forwarder_lambda"></a> [forwarder\_lambda](#output\_forwarder\_lambda) | account\_id |
 <!-- END_TF_DOCS -->
 
 <!-- AUTHORS -->
@@ -94,15 +151,14 @@ See [LICENSE][license-url] for full details
 <p align="center">Copyright &copy; 2024 ACAI GmbH</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
-[acai-shield]: https://img.shields.io/badge/maintained_by-acai.gmbh-CB224B?style=flat
 [acai-url]: https://acai.gmbh
-[terraform-version-shield]: https://img.shields.io/badge/tf-%3E%3D0.15.0-blue.svg?style=flat&color=blueviolet
-[terraform-version-url]: https://www.terraform.io/upgrade-guides/0-15.html
-[release-shield]: https://img.shields.io/github/v/release/acai-consulting/REPLACE_ME?style=flat&color=success
-[architecture-png]: https://github.com/acai-consulting/REPLACE_ME/blob/main/docs/architecture.png?raw=true
-[release-url]: https://github.com/acai-consulting/REPLACE_ME/releases
-[contributors-url]: https://github.com/acai-consulting/REPLACE_ME/graphs/contributors
-[license-url]: https://github.com/acai-consulting/REPLACE_ME/tree/main/LICENSE
+[acai-shield]: https://img.shields.io/badge/maintained_by-acai.gmbh-CB224B?style=flat
+[module-version-shield]: https://img.shields.io/badge/module_version-1.0.0-CB224B?style=flat
+[terraform-version-shield]: https://img.shields.io/badge/tf-%3E%3D1.3.10-blue.svg?style=flat&color=blueviolet
+[trivy-shield]: https://img.shields.io/badge/trivy-passed-green
+[checkov-shield]: https://img.shields.io/badge/checkov-passed-green
+[release-shield]: https://img.shields.io/github/v/release/acai-consulting/terraform-aws-lambda-monitoring?style=flat&color=success
+[release-url]: https://registry.terraform.io/modules/acai-consulting/lambda-monitoring/aws/latest
+[license-url]: ./LICENSE
 [terraform-url]: https://www.terraform.io
 [aws-url]: https://aws.amazon.com
-[example-complete-url]: https://github.com/acai-consulting/REPLACE_ME/tree/main/examples/complete
