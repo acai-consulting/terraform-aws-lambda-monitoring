@@ -1,9 +1,11 @@
 # terraform-aws-lambda-monitoring
 
 <!-- LOGO -->
-<a href="https://acai.gmbh">    
-  <img src="https://acai.gmbh/images/logo/logo-acai-badge.png" alt="acai logo" title="ACAI" align="right" height="100" />
-</a>
+<div style="text-align: right; margin-top: -60px;">
+<a href="https://acai.gmbh">
+  <img src="https://github.com/acai-consulting/acai.public/raw/main/logo/logo_github_readme.png" alt="acai logo" title="ACAI"  width="250" /></a>
+</div>
+</br>
 
 <!-- SHIELDS -->
 [![Maintained by acai.gmbh][acai-shield]][acai-url]
