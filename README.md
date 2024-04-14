@@ -136,7 +136,7 @@ module "workload_lambda" {
 <!-- AUTHORS -->
 ## Authors
 
-This module is maintained by [ACAI GmbH][acai-url] with help from [these amazing contributors][contributors-url]
+This module is maintained by [ACAI GmbH][acai-url]
 
 <!-- LICENSE -->
 ## License
@@ -158,7 +158,6 @@ See [LICENSE][license-url] for full details
 [trivy-shield]: https://img.shields.io/badge/trivy-passed-green
 [checkov-shield]: https://img.shields.io/badge/checkov-passed-green
 [release-shield]: https://img.shields.io/github/v/release/acai-consulting/terraform-aws-lambda-monitoring?style=flat&color=success
-[release-url]: https://registry.terraform.io/modules/acai-consulting/lambda-monitoring/aws/latest
+[release-url]: https://github.com/acai-consulting/terraform-aws-lambda-monitoring/releases
 [license-url]: ./LICENSE
 [terraform-url]: https://www.terraform.io
-[aws-url]: https://aws.amazon.com
