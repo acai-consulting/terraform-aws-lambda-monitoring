@@ -106,7 +106,7 @@ module "workload_lambda" {
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_forwarder_lambda"></a> [forwarder\_lambda](#module\_forwarder\_lambda) | acai-consulting/lambda/aws | 1.2.1 |
+| <a name="module_forwarder_lambda"></a> [forwarder\_lambda](#module\_forwarder\_lambda) | acai-consulting/lambda/aws | 1.2.2 |
 
 ## Resources
 
@@ -120,7 +120,7 @@ module "workload_lambda" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_settings"></a> [settings](#input\_settings) | Configuration for the central error collector. | <pre>object({<br>    lambda_name                  = optional(string, "lambda-error-forwarder")<br>    central_iam_role_arn         = string<br>    central_loggroup_name        = string<br>    central_loggroup_region_name = string<br>  })</pre> | n/a | yes |
+| <a name="input_settings"></a> [settings](#input\_settings) | Configuration for the central error collector. | <pre>object({<br>    lambda_name = optional(string, "lambda-error-forwarder")<br>    central_logging = object({<br>      iam_role_arn               = string<br>      error_loggroup_name        = string<br>      error_loggroup_region_name = string<br>    })<br>  })</pre> | n/a | yes |
 | <a name="input_iam_role_settings"></a> [iam\_role\_settings](#input\_iam\_role\_settings) | Settings for IAM Roles. | <pre>object({<br>    path                     = optional(string, "/")<br>    permissions_boundary_arn = optional(string)<br>  })</pre> | <pre>{<br>  "path": "/",<br>  "permissions_boundary_arn": null<br>}</pre> | no |
 | <a name="input_lambda_settings"></a> [lambda\_settings](#input\_lambda\_settings) | HCL map of the SEMPER Lambda-Settings. | <pre>object({<br>    timeout               = optional(number, 30)<br>    memory_size           = optional(number, 512)<br>    log_retention_in_days = optional(number, 90)<br>    log_level             = optional(string, "INFO")<br>  })</pre> | <pre>{<br>  "log_level": "INFO",<br>  "log_retention_in_days": 90,<br>  "memory_size": 512,<br>  "timeout": 60<br>}</pre> | no |
 | <a name="input_resource_tags"></a> [resource\_tags](#input\_resource\_tags) | A map of tags to assign to the resources in this module. | `map(string)` | `{}` | no |
