@@ -27,7 +27,7 @@ module "workload_error_forwarder" {
 # ---------------------------------------------------------------------------------------------------------------------
 module "workload_lambda" {
   #checkov:skip=CKV_TF_1: Currently version-tags are used
-  count  = var.number_of_failing_lambdas
+  count   = var.number_of_failing_lambdas
   source  = "acai-consulting/lambda/aws"
   version = "1.2.2"
 
