@@ -30,13 +30,12 @@ module "workload_lambda" {
   count  = var.number_of_failing_lambdas
   source = "git::https://github.com/acai-consulting/terraform-aws-lambda.git?ref=fix-count"
 
-
   lambda_settings = {
     function_name = "${var.failing_lambda_prefix}-${count.index + 1}"
     description   = "This Lambda will cause an Error"
     config = {
-      architecture          = "arm64"
       runtime               = "python3.10"
+      architecture          = "arm64"
       log_level             = "INFO"
       log_retention_in_days = 7
       memory_size           = 512
@@ -44,7 +43,7 @@ module "workload_lambda" {
     }
     error_handling = {
       central_collector = {
-        target_arn = module.workload_error_forwarder.forwarder_lambda.lambda.arn
+        target_arn = try(module.workload_error_forwarder.forwarder_lambda.lambda.arn, null)
       }
     }
     package = {
