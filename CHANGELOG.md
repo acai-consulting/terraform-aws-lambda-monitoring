@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0](https://github.com/acai-consulting/terraform-aws-lambda-monitoring/compare/1.0.1...1.1.0) (2024-04-15)
+
+
+### Features
+
+* Refine input ([#3](https://github.com/acai-consulting/terraform-aws-lambda-monitoring/issues/3)) ([e960bf7](https://github.com/acai-consulting/terraform-aws-lambda-monitoring/commit/e960bf745860f5426c6db3ce1ecda402080838c1))
+
 ## [1.0.1](https://github.com/acai-consulting/terraform-aws-lambda-monitoring/compare/1.0.0...1.0.1) (2024-04-14)
 
 
