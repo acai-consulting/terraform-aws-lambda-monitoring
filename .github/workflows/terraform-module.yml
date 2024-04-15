@@ -10,10 +10,8 @@ on:
 
 jobs:
   tf_module_test_job:
-    needs: tf_module_base_job
     uses: acai-consulting/github-terraform-workflows/.github/workflows/tfc-module-test.yml@main
     if: ${{ 
-      needs.tf_module_base_job.outputs.all_steps_passed == 'true' &&
       github.event_name == 'pull_request' }}
     with:
       terratest_config_repo: "acai-consulting/github-workflow-configs"
