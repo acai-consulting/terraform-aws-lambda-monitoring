@@ -33,8 +33,10 @@ variable "iam_role_settings" {
 }
 
 variable "lambda_settings" {
-  description = "HCL map of the SEMPER Lambda-Settings."
+  description = "HCL map of the Lambda-Settings."
   type = object({
+    runtime               = optional(string, "python3.10")
+    architecture          = optional(string, "arm64")
     timeout               = optional(number, 30)
     memory_size           = optional(number, 512)
     log_retention_in_days = optional(number, 90)

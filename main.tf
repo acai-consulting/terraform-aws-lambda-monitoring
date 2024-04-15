@@ -45,13 +45,7 @@ module "forwarder_lambda" {
   lambda_settings = {
     function_name = var.settings.lambda_name
     description   = "Target for LogGroup Subscription-filter."
-    config = {
-      runtime               = "python3.10"
-      architecture          = "arm64"
-      timeout               = var.lambda_settings.timeout
-      memory_size           = var.lambda_settings.memory_size
-      log_retention_in_days = var.lambda_settings.log_retention_in_days
-    }
+    config = var.lambda_settings.timeout
     package = {
       source_path = "${path.module}/lambda-files"
     }
