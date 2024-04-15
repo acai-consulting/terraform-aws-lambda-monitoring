@@ -29,7 +29,7 @@ module "workload_lambda" {
   #checkov:skip=CKV_TF_1: Currently version-tags are used
   count   = var.number_of_failing_lambdas
   source  = "acai-consulting/lambda/aws"
-  version = "1.2.1"
+  version = "1.2.2"
 
   lambda_settings = {
     function_name = "${var.failing_lambda_prefix}-${count.index + 1}"

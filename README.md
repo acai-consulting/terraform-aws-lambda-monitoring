@@ -60,7 +60,7 @@ module "workload_error_forwarder" {
 # ¦ WORKLOAD ACCOUNT - DEMO LAMBDA
 # ---------------------------------------------------------------------------------------------------------------------
 module "workload_lambda" {
-  source = "git::https://github.com/acai-consulting/terraform-aws-lambda.git?ref=1.2.1"
+  source = "git::https://github.com/acai-consulting/terraform-aws-lambda.git?ref=1.2.2"
 
   lambda_settings = {
     function_name = "lambda-to-monitor"
