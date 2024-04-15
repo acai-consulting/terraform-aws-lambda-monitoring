@@ -5,5 +5,8 @@ output "account_id" {
 
 output "forwarder_lambda" {
   description = "forwarder_lambda"
-  value       = module.forwarder_lambda
+  value = {
+    target_name = module.forwarder_lambda.lambda.name
+    target_arn  = module.forwarder_lambda.lambda.arn
+  }
 }
