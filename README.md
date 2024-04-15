@@ -112,7 +112,7 @@ module "workload_lambda" {
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_forwarder_lambda"></a> [forwarder\_lambda](#module\_forwarder\_lambda) | git::https://github.com/acai-consulting/terraform-aws-lambda.git | fix-count |
+| <a name="module_forwarder_lambda"></a> [forwarder\_lambda](#module\_forwarder\_lambda) | acai-consulting/lambda/aws | 1.2.3 |
 
 ## Resources
 
