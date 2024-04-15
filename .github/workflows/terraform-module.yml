@@ -9,9 +9,19 @@ on:
       - main
 
 jobs:
+  tf_module_base_job:
+    uses: acai-consulting/github-terraform-workflows/.github/workflows/tf-module-base.yml@main
+    if: ${{ github.event_name == 'pull_request' }}
+    with:
+      tflint_config_repo: "acai-consulting/github-workflow-configs"
+      tflint_config_repo_ref: "main"
+      tflint_config_path: ".tflint.hcl"
+      
   tf_module_test_job:
+    needs: tf_module_base_job
     uses: acai-consulting/github-terraform-workflows/.github/workflows/tfc-module-test.yml@main
     if: ${{ 
+      needs.tf_module_base_job.outputs.all_steps_passed == 'true' &&
       github.event_name == 'pull_request' }}
     with:
       terratest_config_repo: "acai-consulting/github-workflow-configs"
@@ -24,12 +34,17 @@ jobs:
       AWS_TESTBED_DEFAULT_REGION: ${{ secrets.AWS_TESTBED_DEFAULT_REGION }}
 
   tf_check_for_allowed_merge:
-    needs: [ tf_module_test_job]
+    needs: [tf_module_base_job, tf_module_test_job]
     if: ${{  github.event_name == 'pull_request' }}
     runs-on: "ubuntu-latest"
     steps:
       - name: Check for failure condition        
         run: |
+          # Check if all steps in tf_module_base_job have passed
+          if [ "${{ needs.tf_module_base_job.outputs.all_steps_passed }}" != 'true' ]; then
+            echo "Base job failed, failing the workflow"
+            exit 1
+          fi
           # Check if all steps in tf_module_test_job have passed
           if [ "${{ needs.tf_module_test_job.outputs.all_steps_passed }}" != 'true' ]; then
             echo "Test job failed, failing the workflow"
