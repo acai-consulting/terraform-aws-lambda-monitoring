@@ -17,16 +17,18 @@
 
 <!-- DESCRIPTION -->
 [Terraform][terraform-url] module to centrally monitor Lambda functions located in multiple accounts and regions.
-Requires: https://github.com/acai-consulting/terraform-aws-lambda
+Requires: <https://github.com/acai-consulting/terraform-aws-lambda>
 
 <!-- ARCHITECTURE -->
 ## Architecture
+
 ![architecture](https://raw.githubusercontent.com/acai-consulting/terraform-aws-lambda-monitoring/main/docs/terraform-aws-lambda-monitoring.svg)
 
 <!-- USAGE -->
 ## Usage
 
 ### Central Logging
+
 ```hcl
 module "central_logging" {
   source = "git::https://github.com/acai-consulting/terraform-aws-lambda-monitoring.git//modules/central_logging"
@@ -38,15 +40,19 @@ module "central_logging" {
 ```
 
 ### Workload Account
+
 ```hcl
-# ---------------------------------------------------------------------------------------------------------------------
+# ---------------------------------------
 # ¦ WORKLOAD ACCOUNT - EUC1
-# ---------------------------------------------------------------------------------------------------------------------
+# ---------------------------------------
 locals {
   forwarder_settings = {
-    central_iam_role_arn         = module.core_configuration.central_logging.central_iam_role_arn
-    central_loggroup_name        = module.core_configuration.central_logging.central_error_loggroup_name
-    central_loggroup_region_name = module.core_configuration.central_logging.central_error_loggroup_region_name
+    lambda_name = "lambda-error-forwarder"
+    central_logging =  {
+      iam_role_arn               = module.core_configuration.central_logging.iam_role_name
+      error_loggroup_name        = module.core_configuration.central_logging.error_loggroup_name
+      error_loggroup_region_name = module.core_configuration.central_logging.error_loggroup_region_name
+    }
   }
 }
 
@@ -56,11 +62,11 @@ module "workload_error_forwarder" {
   settings = local.forwarder_settings
 }
 
-# ---------------------------------------------------------------------------------------------------------------------
+# ---------------------------------------
 # ¦ WORKLOAD ACCOUNT - DEMO LAMBDA
-# ---------------------------------------------------------------------------------------------------------------------
+# ---------------------------------------
 module "workload_lambda" {
-  source = "git::https://github.com/acai-consulting/terraform-aws-lambda.git?ref=1.2.1"
+  source = "git::https://github.com/acai-consulting/terraform-aws-lambda.git?ref=1.2.2"
 
   lambda_settings = {
     function_name = "lambda-to-monitor"
@@ -106,7 +112,7 @@ module "workload_lambda" {
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_forwarder_lambda"></a> [forwarder\_lambda](#module\_forwarder\_lambda) | acai-consulting/lambda/aws | 1.2.1 |
+| <a name="module_forwarder_lambda"></a> [forwarder\_lambda](#module\_forwarder\_lambda) | acai-consulting/lambda/aws | 1.2.3 |
 
 ## Resources
 
@@ -120,9 +126,9 @@ module "workload_lambda" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_settings"></a> [settings](#input\_settings) | Configuration for the central error collector. | <pre>object({<br>    lambda_name                  = optional(string, "lambda-error-forwarder")<br>    central_iam_role_arn         = string<br>    central_loggroup_name        = string<br>    central_loggroup_region_name = string<br>  })</pre> | n/a | yes |
+| <a name="input_settings"></a> [settings](#input\_settings) | Configuration for the central error collector. | <pre>object({<br>    lambda_name = optional(string, "lambda-error-forwarder")<br>    central_logging = object({<br>      iam_role_arn               = string<br>      error_loggroup_name        = string<br>      error_loggroup_region_name = string<br>    })<br>  })</pre> | n/a | yes |
 | <a name="input_iam_role_settings"></a> [iam\_role\_settings](#input\_iam\_role\_settings) | Settings for IAM Roles. | <pre>object({<br>    path                     = optional(string, "/")<br>    permissions_boundary_arn = optional(string)<br>  })</pre> | <pre>{<br>  "path": "/",<br>  "permissions_boundary_arn": null<br>}</pre> | no |
-| <a name="input_lambda_settings"></a> [lambda\_settings](#input\_lambda\_settings) | HCL map of the SEMPER Lambda-Settings. | <pre>object({<br>    timeout               = optional(number, 30)<br>    memory_size           = optional(number, 512)<br>    log_retention_in_days = optional(number, 90)<br>    log_level             = optional(string, "INFO")<br>  })</pre> | <pre>{<br>  "log_level": "INFO",<br>  "log_retention_in_days": 90,<br>  "memory_size": 512,<br>  "timeout": 60<br>}</pre> | no |
+| <a name="input_lambda_settings"></a> [lambda\_settings](#input\_lambda\_settings) | HCL map of the Lambda-Settings. | <pre>object({<br>    runtime               = optional(string, "python3.10")<br>    architecture          = optional(string, "arm64")<br>    timeout               = optional(number, 30)<br>    memory_size           = optional(number, 512)<br>    log_retention_in_days = optional(number, 90)<br>    log_level             = optional(string, "INFO")<br>  })</pre> | <pre>{<br>  "log_level": "INFO",<br>  "log_retention_in_days": 90,<br>  "memory_size": 512,<br>  "timeout": 60<br>}</pre> | no |
 | <a name="input_resource_tags"></a> [resource\_tags](#input\_resource\_tags) | A map of tags to assign to the resources in this module. | `map(string)` | `{}` | no |
 
 ## Outputs
@@ -130,7 +136,7 @@ module "workload_lambda" {
 | Name | Description |
 |------|-------------|
 | <a name="output_account_id"></a> [account\_id](#output\_account\_id) | account\_id |
-| <a name="output_forwarder_lambda"></a> [forwarder\_lambda](#output\_forwarder\_lambda) | account\_id |
+| <a name="output_forwarder_lambda"></a> [forwarder\_lambda](#output\_forwarder\_lambda) | forwarder\_lambda |
 <!-- END_TF_DOCS -->
 
 <!-- AUTHORS -->

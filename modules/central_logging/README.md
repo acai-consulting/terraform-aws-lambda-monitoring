@@ -41,8 +41,9 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_central_error_loggroup_arn"></a> [central\_error\_loggroup\_arn](#output\_central\_error\_loggroup\_arn) | n/a |
-| <a name="output_central_error_loggroup_name"></a> [central\_error\_loggroup\_name](#output\_central\_error\_loggroup\_name) | n/a |
-| <a name="output_central_error_loggroup_region_name"></a> [central\_error\_loggroup\_region\_name](#output\_central\_error\_loggroup\_region\_name) | n/a |
-| <a name="output_central_iam_role_arn"></a> [central\_iam\_role\_arn](#output\_central\_iam\_role\_arn) | n/a |
+| <a name="output_central_error_loggroup_arn"></a> [central\_error\_loggroup\_arn](#output\_central\_error\_loggroup\_arn) | central\_error\_loggroup\_arn |
+| <a name="output_central_error_loggroup_name"></a> [central\_error\_loggroup\_name](#output\_central\_error\_loggroup\_name) | central\_error\_loggroup\_name |
+| <a name="output_central_error_loggroup_region_name"></a> [central\_error\_loggroup\_region\_name](#output\_central\_error\_loggroup\_region\_name) | central\_error\_loggroup\_region\_name |
+| <a name="output_central_iam_role_arn"></a> [central\_iam\_role\_arn](#output\_central\_iam\_role\_arn) | central\_iam\_role\_arn |
+| <a name="output_central_logging"></a> [central\_logging](#output\_central\_logging) | central\_logging |
 <!-- END_TF_DOCS -->

@@ -29,14 +29,14 @@ module "workload_lambda" {
   #checkov:skip=CKV_TF_1: Currently version-tags are used
   count   = var.number_of_failing_lambdas
   source  = "acai-consulting/lambda/aws"
-  version = "1.2.1"
+  version = "1.2.3"
 
   lambda_settings = {
     function_name = "${var.failing_lambda_prefix}-${count.index + 1}"
     description   = "This Lambda will cause an Error"
     config = {
-      architecture          = "arm64"
       runtime               = "python3.10"
+      architecture          = "arm64"
       log_level             = "INFO"
       log_retention_in_days = 7
       memory_size           = 512
@@ -44,7 +44,8 @@ module "workload_lambda" {
     }
     error_handling = {
       central_collector = {
-        target_arn = module.workload_error_forwarder.forwarder_lambda.lambda.arn
+        target_name = module.workload_error_forwarder.forwarder_lambda.target_name
+        target_arn  = module.workload_error_forwarder.forwarder_lambda.target_arn
       }
     }
     package = {
@@ -52,6 +53,6 @@ module "workload_lambda" {
     }
   }
   depends_on = [
-    module.workload_error_forwarder
+    module.workload_error_forwarder.forwarder_lambda
   ]
 }

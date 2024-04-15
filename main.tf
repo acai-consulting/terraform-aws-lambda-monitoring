@@ -40,18 +40,11 @@ locals {
 module "forwarder_lambda" {
   #checkov:skip=CKV_TF_1: Currently version-tags are used
   source  = "acai-consulting/lambda/aws"
-  version = "1.2.1"
-
+  version = "1.2.3"
   lambda_settings = {
     function_name = var.settings.lambda_name
     description   = "Target for LogGroup Subscription-filter."
-    config = {
-      runtime               = "python3.10"
-      architecture          = "arm64"
-      timeout               = var.lambda_settings.timeout
-      memory_size           = var.lambda_settings.memory_size
-      log_retention_in_days = var.lambda_settings.log_retention_in_days
-    }
+    config        = var.lambda_settings
     package = {
       source_path = "${path.module}/lambda-files"
     }
@@ -59,9 +52,9 @@ module "forwarder_lambda" {
       LOG_LEVEL                          = var.lambda_settings.log_level
       ACCOUNT_ID                         = data.aws_caller_identity.this.account_id
       REGION                             = data.aws_region.this.name
-      CENTRAL_ERROR_IAM_ROLE_ARN         = var.settings.central_iam_role_arn
-      CENTRAL_ERROR_LOGGROUP_NAME        = var.settings.central_loggroup_name
-      CENTRAL_ERROR_LOGGROUP_REGION_NAME = var.settings.central_loggroup_region_name
+      CENTRAL_ERROR_IAM_ROLE_ARN         = var.settings.central_logging.iam_role_arn
+      CENTRAL_ERROR_LOGGROUP_NAME        = var.settings.central_logging.error_loggroup_name
+      CENTRAL_ERROR_LOGGROUP_REGION_NAME = var.settings.central_logging.error_loggroup_region_name
     }
   }
   execution_iam_role_settings = {
@@ -83,7 +76,7 @@ data "aws_iam_policy_document" "lambda_execution_role_permission" {
     ]
     effect = "Allow"
     resources = [
-      var.settings.central_iam_role_arn
+      var.settings.central_logging.iam_role_arn
     ]
   }
 }
