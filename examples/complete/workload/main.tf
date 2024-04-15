@@ -27,9 +27,8 @@ module "workload_error_forwarder" {
 # ---------------------------------------------------------------------------------------------------------------------
 module "workload_lambda" {
   #checkov:skip=CKV_TF_1: Currently version-tags are used
-  count   = var.number_of_failing_lambdas
-  source  = "acai-consulting/lambda/aws"
-  version = "1.2.2"
+  count  = var.number_of_failing_lambdas
+  source = "git::https://github.com/acai-consulting/terraform-aws-lambda.git?ref=fix-count"
 
   lambda_settings = {
     function_name = "${var.failing_lambda_prefix}-${count.index + 1}"
