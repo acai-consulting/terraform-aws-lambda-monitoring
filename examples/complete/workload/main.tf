@@ -52,6 +52,6 @@ module "workload_lambda" {
     }
   }
   depends_on = [
-    module.workload_error_forwarder.forwarder_lambda.lambda
+    module.workload_error_forwarder.forwarder_lambda
   ]
 }
