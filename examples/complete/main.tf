@@ -33,14 +33,6 @@ module "central_logging" {
   }
 }
 
-locals {
-  forwarder_settings = {
-    central_iam_role_arn         = module.central_logging.central_iam_role_arn
-    central_loggroup_name        = module.central_logging.central_error_loggroup_name
-    central_loggroup_region_name = module.central_logging.central_error_loggroup_region_name
-  }
-}
-
 # ---------------------------------------------------------------------------------------------------------------------
 # ¦ WORKLOAD ACCOUNT - EUC1
 # ---------------------------------------------------------------------------------------------------------------------

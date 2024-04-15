@@ -45,7 +45,7 @@ module "forwarder_lambda" {
   lambda_settings = {
     function_name = var.settings.lambda_name
     description   = "Target for LogGroup Subscription-filter."
-    config = var.lambda_settings.timeout
+    config        = var.lambda_settings
     package = {
       source_path = "${path.module}/lambda-files"
     }

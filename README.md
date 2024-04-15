@@ -17,16 +17,18 @@
 
 <!-- DESCRIPTION -->
 [Terraform][terraform-url] module to centrally monitor Lambda functions located in multiple accounts and regions.
-Requires: https://github.com/acai-consulting/terraform-aws-lambda
+Requires: <https://github.com/acai-consulting/terraform-aws-lambda>
 
 <!-- ARCHITECTURE -->
 ## Architecture
+
 ![architecture](https://raw.githubusercontent.com/acai-consulting/terraform-aws-lambda-monitoring/main/docs/terraform-aws-lambda-monitoring.svg)
 
 <!-- USAGE -->
 ## Usage
 
 ### Central Logging
+
 ```hcl
 module "central_logging" {
   source = "git::https://github.com/acai-consulting/terraform-aws-lambda-monitoring.git//modules/central_logging"
@@ -38,15 +40,19 @@ module "central_logging" {
 ```
 
 ### Workload Account
+
 ```hcl
-# ---------------------------------------------------------------------------------------------------------------------
+# ---------------------------------------
 # ¦ WORKLOAD ACCOUNT - EUC1
-# ---------------------------------------------------------------------------------------------------------------------
+# ---------------------------------------
 locals {
   forwarder_settings = {
-    central_iam_role_arn         = module.core_configuration.central_logging.central_iam_role_arn
-    central_loggroup_name        = module.core_configuration.central_logging.central_error_loggroup_name
-    central_loggroup_region_name = module.core_configuration.central_logging.central_error_loggroup_region_name
+    lambda_name = "lambda-error-forwarder"
+    central_logging =  {
+      iam_role_arn               = module.core_configuration.central_logging.iam_role_name
+      error_loggroup_name        = module.core_configuration.central_logging.error_loggroup_name
+      error_loggroup_region_name = module.core_configuration.central_logging.error_loggroup_region_name
+    }
   }
 }
 
@@ -56,9 +62,9 @@ module "workload_error_forwarder" {
   settings = local.forwarder_settings
 }
 
-# ---------------------------------------------------------------------------------------------------------------------
+# ---------------------------------------
 # ¦ WORKLOAD ACCOUNT - DEMO LAMBDA
-# ---------------------------------------------------------------------------------------------------------------------
+# ---------------------------------------
 module "workload_lambda" {
   source = "git::https://github.com/acai-consulting/terraform-aws-lambda.git?ref=1.2.2"
 
