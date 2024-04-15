@@ -136,7 +136,7 @@ module "workload_lambda" {
 | Name | Description |
 |------|-------------|
 | <a name="output_account_id"></a> [account\_id](#output\_account\_id) | account\_id |
-| <a name="output_forwarder_lambda"></a> [forwarder\_lambda](#output\_forwarder\_lambda) | account\_id |
+| <a name="output_forwarder_lambda"></a> [forwarder\_lambda](#output\_forwarder\_lambda) | forwarder\_lambda |
 <!-- END_TF_DOCS -->
 
 <!-- AUTHORS -->
