@@ -43,7 +43,8 @@ module "workload_lambda" {
     }
     error_handling = {
       central_collector = {
-        target_arn = try(module.workload_error_forwarder.forwarder_lambda.lambda.arn, null)
+        target_name = try(module.workload_error_forwarder.forwarder_lambda.lambda.name, null)
+        target_arn  = try(module.workload_error_forwarder.forwarder_lambda.lambda.arn, null)
       }
     }
     package = {
@@ -51,6 +52,6 @@ module "workload_lambda" {
     }
   }
   depends_on = [
-    module.workload_error_forwarder
+    module.workload_error_forwarder.forwarder_lambda.lambda.arn
   ]
 }
