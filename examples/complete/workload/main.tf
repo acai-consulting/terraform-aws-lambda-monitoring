@@ -27,7 +27,7 @@ module "workload_error_forwarder" {
 # ---------------------------------------------------------------------------------------------------------------------
 module "workload_lambda" {
   #checkov:skip=CKV_TF_1: Currently version-tags are used
-  count  = var.number_of_failing_lambdas
+  count   = var.number_of_failing_lambdas
   source  = "acai-consulting/lambda/aws"
   version = "1.2.3"
 
@@ -43,7 +43,10 @@ module "workload_lambda" {
       timeout               = 60
     }
     error_handling = {
-      central_collector = try(module.workload_error_forwarder.forwarder_lambda, null)
+      central_collector = {
+        target_name = module.workload_error_forwarder.forwarder_lambda.target_name
+        target_arn  = module.workload_error_forwarder.forwarder_lambda.target_arn
+      }
     }
     package = {
       source_path = "${path.module}/lambda-files"
