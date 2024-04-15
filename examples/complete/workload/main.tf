@@ -43,10 +43,7 @@ module "workload_lambda" {
       timeout               = 60
     }
     error_handling = {
-      central_collector = {
-        target_name = try(module.workload_error_forwarder.forwarder_lambda.lambda.name, null)
-        target_arn  = try(module.workload_error_forwarder.forwarder_lambda.lambda.arn, null)
-      }
+      central_collector = try(module.workload_error_forwarder.forwarder_lambda, null)
     }
     package = {
       source_path = "${path.module}/lambda-files"
